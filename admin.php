@@ -37,7 +37,7 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
 
     public function html() {
 
-        if(!empty($_REQUEST['go'])) {
+        if(!empty($_REQUEST['go']) && checkSecurityToken()) {
             echo "<h3>Processing, do not interrupt...</h3>";
             tpl_flush();
 
@@ -46,6 +46,22 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
             $this->execute();
 
             echo "<h3>Processing done.</h3>";
+
+            if($this->dryrun) {
+                echo '<a href="' . wl(
+                    '', array(
+                             'do' => 'admin',
+                             'page' => 'rebase',
+                             'searchin' => $this->searchin,
+                             'filter' => $this->filter,
+                             'changefrom' => $this->changefrom,
+                             'changeto' => $this->changeto,
+                             'dryrun' => 0,
+                             'go' => 'go',
+                             'sectok' => getSecurityToken()
+                        )
+                ) . '">rerun the process for real (NO simulation!)</a>';
+            }
             tpl_flush();
         } else {
 
@@ -99,7 +115,7 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
         $currentns = getNS($currentpage);
 
         $text = rawWiki($currentpage);
-        $crc  = md5($text);
+        $crc = md5($text);
         $instructions = p_get_instructions($text);
         $instructions = array_reverse($instructions);
 
@@ -146,9 +162,9 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
             }
             // everything else is ignored
         }
-        if($crc == md5($text)){
+        if($crc == md5($text)) {
             echo '✗ page not changed<br />';
-        }else{
+        } else {
             if($this->dryrun) {
                 echo '✓ simulating, page changes not saved<br />';
             } else {
