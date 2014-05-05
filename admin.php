@@ -1,6 +1,6 @@
 <?php
 /**
- * DokuWiki Plugin rebase (Admin Component)
+ * DokuWiki Plugin linkfix (Admin Component)
  *
  * @license GPL 2 http://www.gnu.org/licenses/gpl-2.0.html
  * @author  Andreas Gohr <andi@splitbrain.org>
@@ -9,13 +9,7 @@
 // must be run within Dokuwiki
 if(!defined('DOKU_INC')) die();
 
-if(!defined('DOKU_LF')) define('DOKU_LF', "\n");
-if(!defined('DOKU_TAB')) define('DOKU_TAB', "\t");
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN', DOKU_INC . 'lib/plugins/');
-
-require_once DOKU_PLUGIN . 'admin.php';
-
-class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
+class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
     private $searchin = '';
     private $filter = '';
@@ -51,7 +45,7 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
                 echo '<a href="' . wl(
                     '', array(
                              'do' => 'admin',
-                             'page' => 'rebase',
+                             'page' => 'linkfix',
                              'searchin' => $this->searchin,
                              'filter' => $this->filter,
                              'changefrom' => $this->changefrom,
@@ -168,7 +162,7 @@ class admin_plugin_rebase extends DokuWiki_Admin_Plugin {
             if($this->dryrun) {
                 echo '✓ simulating, page changes not saved<br />';
             } else {
-                saveWikiText($currentpage, $text, 'links rebased', true);
+                saveWikiText($currentpage, $text, 'links adjusted', true);
                 echo '✓ new page version saved <br />';
             }
         }

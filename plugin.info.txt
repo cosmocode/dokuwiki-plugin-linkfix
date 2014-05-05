@@ -1,7 +1,7 @@
-base   rebase
+base   linkfix
 author Andreas Gohr
 email  andi@splitbrain.org
-date   2013-06-03
-name   rebase plugin
-desc   rebases links in a given namespace
-url    http://www.cosmocode.de
+date   2014-05-05
+name   linkfix plugin
+desc   Mass adjust links in the wiki
+url    http://www.dokuwiki.org/plugin:linkfix
