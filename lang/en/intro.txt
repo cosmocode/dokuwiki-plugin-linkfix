@@ -1,5 +1,5 @@
 ====== Adjust Links ======
 
-This tool allows you to change all links in your wiki by simple search and replace. You can change internal and external links. Internal links will always be checked against their full resolved ID external URLs have to be specified with their protocol prefix.
+This tool allows you to change all links in your wiki by simple search and replace. You can change internal and external links. Internal links will always be checked against their full resolved ID. External URLs have to be specified with their protocol prefix.
 
 Please not that processing can take a while in large wikis. Do not close the page during the process.

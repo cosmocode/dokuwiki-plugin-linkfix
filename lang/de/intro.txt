@@ -1,0 +1,5 @@
+====== Links anpassen ======
+
+Dieses Werkzeug erlaubt es Ihnen alle Links in Ihrem Wiki mittels Suchen und Ersetzen anzupasse. Es können sowhl interne als auch externe Links angepasst werden. Bei internen Links werden immer vollständige, aufgelöste ID verglichen. Externe Link müssen mit Protokoll-Prefix angegeben werden.
+
+Bitte bedenken Sie, dass die Anpassung bei großen Wikis eine Weile dauern kann. Bitte schließen Sie diese Seite nicht während der Anpassung.

@@ -44,7 +44,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             ignore_user_abort(true);
             set_time_limit(0);
             if($this->execute()) {
-                echo "<h3>Processing done.</h3>";
+                echo '<h3>'.$this->getLang('processingdone').'</h3>';
 
                 if($this->dryrun) {
                     echo '<a href="' . wl(
@@ -58,7 +58,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
                                      'go'         => 'go',
                                      'sectok'     => getSecurityToken()
                                 )
-                        ) . '">rerun the process for real (NO simulation!)</a>';
+                        ) . '">'.$this->getLang('rerunhot').'</a>';
                 }
                 tpl_flush();
             }
