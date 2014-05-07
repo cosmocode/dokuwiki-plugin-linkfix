@@ -16,6 +16,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
     protected $changeto = '';
     protected $dryrun = false;
     protected $type = 'links';
+    protected $isextern = false;
 
     public function getMenuSort() {
         return 3000;
@@ -24,11 +25,12 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
     public function handle() {
         global $INPUT;
 
-        $this->searchin   = $INPUT->str('searchin');
+        $this->searchin   = cleanID($INPUT->str('searchin'));
         $this->changefrom = $INPUT->str('changefrom');
         $this->changeto   = $INPUT->str('changeto');
         $this->type       = $INPUT->valid('type', array('links', 'media'), 'links');
         $this->dryrun     = $INPUT->bool('dryrun');
+        $this->isextern   = preg_match('/^\w+:\/\//i', $this->changefrom);
     }
 
     public function html() {
@@ -88,31 +90,38 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
     protected function execute() {
         global $conf;
 
+        // make sure the given search namespace exists
         $searchin = str_replace(':', '/', $this->searchin);
         if(!is_dir($conf['datadir'] . '/' . $searchin)) {
             msg(sprintf($this->getLang('badnamespace'), hsc($this->searchin)), -1);
             return false;
         }
 
-        // FIXME use index. When local link (not HTTP prefix) use metadata index, otherwise standard fulltext
+        // use indexer to find all possibly affected pages
+        if($this->isextern) {
+            $null = '';
+            $data = ft_pageSearch('"' . $this->changefrom . '"*', $null);
+            $data = array_keys($data);
+        } elseif($this->type == 'media') {
+            $query = $this->changefrom . '*';
+            $data  = idx_get_indexer()->lookupKey('relation_media', $query);
+        } else {
+            $query = $this->changefrom . '*';
+            $data  = idx_get_indexer()->lookupKey('relation_references', $query);
+        }
+        $data = array_unique($data);
 
-        $data = array();
-        search(
-            $data,
-            $conf['datadir'],
-            'search_allpages',
-            array(
-                 'depth'   => 0,
-                 'skipacl' => true,
-                 'hash'    => false,
-            ),
-            $searchin
-        );
+        $len = strlen($this->searchin);
+        foreach($data as $id) {
 
-        foreach($data as $file) {
-            $this->prnt($this->getLang('checking') . ' <b>' . hsc($file['id']) . "</b><br />");
+            // skip everything that's not in the wanted namespace
+            if($len && substr($id, 0, $len + 1) != $this->searchin . ':') continue;
+            // skip non existing pages
+            if(!page_exists($id)) continue;
+
+            print $this->getLang('checking') . ' <b>' . hsc($id) . "</b><br />";
             tpl_flush();
-            $this->updatepage($file['id']);
+            $this->updatepage($id);
         }
 
         return true;
@@ -133,8 +142,10 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
         foreach($instructions as $instruction) {
             if(
-                ($this->type == 'links' && ($instruction[0] == 'internallink' || $instruction[0] == 'externallink')) ||
-                ($this->type == 'media' && ($instruction[0] == 'internalmedia' || $instruction[0] == 'externalmedia'))
+                ($this->type == 'links' && $this->isextern  && $instruction[0] == 'externallink') ||
+                ($this->type == 'links' && !$this->isextern && $instruction[0] == 'internallink') ||
+                ($this->type == 'media' && $this->isextern  && $instruction[0] == 'externalmedia') ||
+                ($this->type == 'media' && !$this->isextern && $instruction[0] == 'internalmedia')
             ) {
                 $link = $instruction[1][0];
                 $pos  = $instruction[2] - 1;
@@ -150,10 +161,14 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
                 $full   = $link;
                 $exists = false;
-                if($this->type == 'links') {
-                    resolve_pageid($currentns, $full, $exists);
+                if($this->isextern) {
+                    $full = mb_strtolower($full);
                 } else {
-                    resolve_mediaid($currentns, $full, $exists);
+                    if($this->type == 'links') {
+                        resolve_pageid($currentns, $full, $exists);
+                    } else {
+                        resolve_mediaid($currentns, $full, $exists);
+                    }
                 }
 
                 // create the new link
@@ -211,11 +226,13 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
         // add prefix
         $new = $this->changeto . $new;
 
-        // strip left over colons
-        $new = ltrim($new, ':');
+        if(!$this->isextern) {
+            // strip left over colons
+            $new = ltrim($new, ':');
 
-        // make absolute if needed
-        if($currentNS && strpos($new, ':') === false) $new = ":$new";
+            // make absolute if needed
+            if($currentNS && strpos($new, ':') === false) $new = ":$new";
+        }
 
         return $new;
     }
