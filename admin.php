@@ -66,7 +66,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
             echo $this->locale_xhtml('intro');
 
-            $form = new Doku_Form(array('action' => wl()));
+            $form = new Doku_Form(array('action' => wl(), 'class' => 'plugin_linkfix'));
             $form->addHidden('go', 'go');
             $form->addHidden('page', 'linkfix');
             $form->addHidden('id', $ID);
@@ -74,9 +74,9 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             $form->addElement(form_makeTextField('searchin', '', $this->getLang('searchin'), '', 'block'));
             $form->addElement(form_makeTextField('changefrom', '', $this->getLang('changefrom'), '', 'block'));
             $form->addElement(form_makeTextField('changeto', '', $this->getLang('changeto'), '', 'block'));
-            $form->addElement(form_makeRadioField('type', 'links', $this->getLang('links'), '', 'block', array('checked' => 'checked')));
-            $form->addElement(form_makeRadioField('type', 'media', $this->getLang('media'), '', 'block'));
-            $form->addElement(form_makeCheckboxField('dryrun', '1', $this->getLang('dryrun'), '', 'block', array('checked' => 'checked')));
+            $form->addElement(form_makeRadioField('type', 'links', $this->getLang('links'), '', 'block tick', array('checked' => 'checked')));
+            $form->addElement(form_makeRadioField('type', 'media', $this->getLang('media'), '', 'block tick'));
+            $form->addElement(form_makeCheckboxField('dryrun', '1', $this->getLang('dryrun'), '', 'block tick', array('checked' => 'checked')));
             $form->addElement(form_makeButton('submit', 'admin', $this->getLang('submit')));
             $form->printForm();
         }
