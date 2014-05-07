@@ -22,17 +22,20 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
     }
 
     public function handle() {
-        if(isset($_REQUEST['searchin'])) $this->searchin = cleanID($_REQUEST['searchin']);
-        if(isset($_REQUEST['changefrom'])) $this->changefrom = $_REQUEST['changefrom'];
-        if(isset($_REQUEST['changeto'])) $this->changeto = $_REQUEST['changeto'];
-        if(isset($_REQUEST['type'])) $this->type = $_REQUEST['type'];
-        if(isset($_REQUEST['dryrun'])) $this->dryrun = (bool) $_REQUEST['dryrun'];
+        global $INPUT;
+
+        $this->searchin   = $INPUT->str('searchin');
+        $this->changefrom = $INPUT->str('changefrom');
+        $this->changeto   = $INPUT->str('changeto');
+        $this->type       = $INPUT->valid('type', array('links', 'media'), 'links');
+        $this->dryrun     = $INPUT->bool('dryrun');
     }
 
     public function html() {
         global $ID;
+        global $INPUT;
 
-        if(!empty($_REQUEST['go']) && checkSecurityToken()) {
+        if($INPUT->has('go') && checkSecurityToken()) {
             echo '<h3>' . $this->getLang('processing') . '</h3>';
             tpl_flush();
 
