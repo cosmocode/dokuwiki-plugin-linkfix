@@ -11,11 +11,11 @@ if(!defined('DOKU_INC')) die();
 
 class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
-    private $searchin = '';
-    private $changefrom = '';
-    private $changeto = '';
-    private $dryrun = false;
-    private $type = 'links';
+    protected $searchin = '';
+    protected $changefrom = '';
+    protected $changeto = '';
+    protected $dryrun = false;
+    protected $type = 'links';
 
     public function getMenuSort() {
         return 3000;
@@ -82,7 +82,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
      *
      * @returns bool false if no correct namespace was given
      */
-    private function execute() {
+    protected function execute() {
         global $conf;
 
         $searchin = str_replace(':', '/', $this->searchin);
@@ -107,7 +107,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
         );
 
         foreach($data as $file) {
-            print $this->getLang('checking') . ' <b>' . hsc($file['id']) . "</b><br />";
+            $this->prnt($this->getLang('checking') . ' <b>' . hsc($file['id']) . "</b><br />");
             tpl_flush();
             $this->updatepage($file['id']);
         }
@@ -120,7 +120,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
      *
      * @param string $currentpage the page to rewrite
      */
-    private function updatepage($currentpage) {
+    protected function updatepage($currentpage) {
         $currentns = getNS($currentpage);
 
         $text         = rawWiki($currentpage);
@@ -158,7 +158,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
                 // replace the link
                 if(($link != $newlink) && ($full != cleanID($newlink))) {
-                    echo '&nbsp;&nbsp;&nbsp;' . hsc($link) . ' → ' . hsc($newlink) . '<br />';
+                    $this->prnt('&nbsp;&nbsp;&nbsp;' . hsc($link) . ' → ' . hsc($newlink) . '<br />');
 
                     $text = substr($text, 0, $pos) .
                         $newlink . // new link
@@ -169,16 +169,25 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             // everything else is ignored
         }
         if($crc == md5($text)) {
-            echo '✗ '.$this->getLang('fail').'<br />';
+            $this->prnt('✗ '.$this->getLang('fail').'<br />');
         } else {
             if($this->dryrun) {
-                echo '✓ '.$this->getLang('successdry').'<br />';
+                $this->prnt('✓ '.$this->getLang('successdry').'<br />');
             } else {
                 saveWikiText($currentpage, $text, $this->getLang('summary'), true);
-                echo '✓ '.$this->getLang('success').'<br />';
+                $this->prnt('✓ '.$this->getLang('success').'<br />');
             }
         }
         tpl_flush();
+    }
+
+    /**
+     * Wrapper around echo, for better testability
+     *
+     * @param $string
+     */
+    protected function prnt($string) {
+        echo $string;
     }
 
     /**
@@ -189,7 +198,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
      * @param string $currentNS the namespace of the page the link was found in
      * @return string the corrected link
      */
-    private function changeLink($link, $full, $currentNS) {
+    protected function changeLink($link, $full, $currentNS) {
         // make sure the prefix matches
         if($this->changefrom && strpos($full, "$this->changefrom") !== 0) return $link;
 

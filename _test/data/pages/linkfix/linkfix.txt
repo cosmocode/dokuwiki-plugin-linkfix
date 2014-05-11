@@ -1,0 +1,3 @@
+====== Linkfix Test Cases ======
+
+[[linkfix|case 1]]
