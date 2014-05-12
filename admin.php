@@ -119,7 +119,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             // skip non existing pages
             if(!page_exists($id)) continue;
 
-            print $this->getLang('checking') . ' <b>' . hsc($id) . "</b><br />";
+            $this->prnt($this->getLang('checking') . ' <b>' . hsc($id) . "</b><br />");
             tpl_flush();
             $this->updatepage($id);
         }

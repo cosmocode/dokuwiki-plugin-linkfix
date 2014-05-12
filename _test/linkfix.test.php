@@ -13,6 +13,7 @@ class linkfix_plugin_linkfix_test extends DokuWikiTest {
         parent::setUpBeforeClass();
         // copy our own config files to the test directory
         TestUtils::rcopy(dirname(DOKU_TMP_DATA), dirname(__FILE__).'/data');
+        idx_addPage('linkfix:linkfix');
     }
 
 
