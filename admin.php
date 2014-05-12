@@ -119,9 +119,10 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             // skip non existing pages
             if(!page_exists($id)) continue;
 
-            $this->prnt($this->getLang('checking') . ' <b>' . hsc($id) . "</b><br />");
-            tpl_flush();
+            $this->prnt('<ul>');
             $this->updatepage($id);
+            $this->prnt('</ul>');
+
         }
 
         return true;
@@ -140,6 +141,13 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
         $instructions = p_get_instructions($text);
         $instructions = array_reverse($instructions);
 
+        $this->prnt('<li><div class="li">');
+        $this->prnt($this->getLang('checking') . ' <b>' . hsc($currentpage) . "</b><br />");
+
+        tpl_flush();
+
+
+        $this->prnt('<ul>');
         foreach($instructions as $instruction) {
             if(
                 ($this->type == 'links' && $this->isextern  && $instruction[0] == 'externallink') ||
@@ -176,7 +184,9 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
                 // replace the link
                 if(($link != $newlink) && ($full != cleanID($newlink))) {
-                    $this->prnt('&nbsp;&nbsp;&nbsp;' . hsc($full) . ' → ' . hsc($newlink) . '<br />');
+                    $this->prnt('<li><div class="li">');
+                    $this->prnt(hsc($full) . ' → ' . hsc($newlink) . '<br />');
+                    $this->prnt('</div></li>');
 
                     $text = substr($text, 0, $pos) .
                         $newlink . // new link
@@ -186,6 +196,8 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
             }
             // everything else is ignored
         }
+        $this->prnt('</ul>');
+
         if($crc == md5($text)) {
             $this->prnt('✗ '.$this->getLang('fail').'<br />');
         } else {
@@ -196,6 +208,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
                 $this->prnt('✓ '.$this->getLang('success').'<br />');
             }
         }
+        $this->prnt('</div></li>');
         tpl_flush();
     }
 
