@@ -176,7 +176,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
                 // replace the link
                 if(($link != $newlink) && ($full != cleanID($newlink))) {
-                    $this->prnt('&nbsp;&nbsp;&nbsp;' . hsc($link) . ' → ' . hsc($newlink) . '<br />');
+                    $this->prnt('&nbsp;&nbsp;&nbsp;' . hsc($full) . ' → ' . hsc($newlink) . '<br />');
 
                     $text = substr($text, 0, $pos) .
                         $newlink . // new link
