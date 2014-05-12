@@ -1,3 +1,9 @@
 ====== Linkfix Test Cases ======
 
 [[linkfix|case 1]]
+
+[[http://www.google.com|case 2]]
+
+{{ something:logo.png |case 3}}
+
+{{ http://www.google.com/logo.png |case 4}}
