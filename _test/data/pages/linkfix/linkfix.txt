@@ -7,3 +7,5 @@
 {{ something:logo.png |case 3}}
 
 {{ http://www.google.com/logo.png |case 4}}
+
+[[\\server\share|case 5]]

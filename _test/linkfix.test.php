@@ -64,6 +64,18 @@ class linkfix_plugin_linkfix_test extends DokuWikiTest {
         $text = rawWiki('linkfix:linkfix');
         $this->assertRegExp('/{{ http:\/\/www\.foogle\.com\/logo.png |case 4}}/', $text);
     }
+
+    public function test_windowsshare() {
+        $plugin = new test_admin_plugin_linkfix();
+
+        $plugin->changefrom = '\\\\server\\';
+        $plugin->changeto   = '\\\\foobar\\';
+        $plugin->isextern   = true;
+        $plugin->execute();
+
+        $text = rawWiki('linkfix:linkfix');
+        $this->assertRegExp('/\\\\foobar\\share|case 5/', $text);
+    }
 }
 
 class test_admin_plugin_linkfix extends admin_plugin_linkfix {

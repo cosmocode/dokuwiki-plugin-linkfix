@@ -30,7 +30,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
         $this->changeto   = $INPUT->str('changeto');
         $this->type       = $INPUT->valid('type', array('links', 'media'), 'links');
         $this->dryrun     = $INPUT->bool('dryrun');
-        $this->isextern   = preg_match('/^\w+:\/\//i', $this->changefrom);
+        $this->isextern   = preg_match('/^(\w+:\/\/|\\\\)/i', $this->changefrom);
     }
 
     public function html() {
@@ -150,7 +150,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
         $this->prnt('<ul>');
         foreach($instructions as $instruction) {
             if(
-                ($this->type == 'links' && $this->isextern  && $instruction[0] == 'externallink') ||
+                ($this->type == 'links' && $this->isextern  && ($instruction[0] == 'externallink' || $instruction[0] == 'windowssharelink')) ||
                 ($this->type == 'links' && !$this->isextern && $instruction[0] == 'internallink') ||
                 ($this->type == 'media' && $this->isextern  && $instruction[0] == 'externalmedia') ||
                 ($this->type == 'media' && !$this->isextern && $instruction[0] == 'internalmedia')
