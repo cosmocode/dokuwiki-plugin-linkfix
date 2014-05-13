@@ -14,6 +14,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
     protected $searchin = '';
     protected $changefrom = '';
     protected $changeto = '';
+    protected $qchangefrom = '';
     protected $dryrun = false;
     protected $type = 'links';
     protected $isextern = false;
@@ -169,9 +170,7 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
 
                 $full   = $link;
                 $exists = false;
-                if($this->isextern) {
-                    $full = mb_strtolower($full);
-                } else {
+                if(!$this->isextern) {
                     if($this->type == 'links') {
                         resolve_pageid($currentns, $full, $exists);
                     } else {
@@ -230,8 +229,13 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
      * @return string the corrected link
      */
     protected function changeLink($link, $full, $currentNS) {
-        // make sure the prefix matches
-        if($this->changefrom && strpos($full, "$this->changefrom") !== 0) return $link;
+        // make sure the prefix matches (caseinsensitive)
+        if($this->changefrom){
+            if(!$this->qchangefrom) {
+                $this->qchangefrom = preg_quote($this->qchangefrom, '/');
+            }
+            if(!preg_match('/^'.$this->qchangefrom.'/ui', $full)) return $link;
+        }
 
         // strip prefix
         $new = substr($full, strlen($this->changefrom));
