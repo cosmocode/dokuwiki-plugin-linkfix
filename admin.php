@@ -160,10 +160,10 @@ class admin_plugin_linkfix extends DokuWiki_Admin_Plugin {
                 $pos  = $instruction[2] - 1;
 
                 while(
-                    $text{$pos} == '[' ||
-                    $text{$pos} == '{' ||
-                    $text{$pos} == ' ' ||
-                    $text{$pos} == "\t"
+                    $text[$pos] == '[' ||
+                    $text[$pos] == '{' ||
+                    $text[$pos] == ' ' ||
+                    $text[$pos] == "\t"
                 ) {
                     $pos++;
                 }
