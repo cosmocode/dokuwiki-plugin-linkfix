@@ -1,7 +1,7 @@
 base   linkfix
 author Andreas Gohr
 email  dokuwiki@cosmocode.de
-date   2019-03-20
+date   2024-05-02
 name   linkfix plugin
 desc   Mass adjust links in the wiki
 url    http://www.dokuwiki.org/plugin:linkfix
